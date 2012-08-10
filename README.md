@@ -14,7 +14,7 @@ Usage
 -----
 
 one URL per line
-arguments : output-file input-file
+arguments : output-file input-file [compression level: 1 or 2]
 
 This tool is under heavy development, it works but may not have been optimized yet. It is tested on UNIX (Debian flavours) with a FreePascal compiler, and should work on other platforms with FPC.
 
