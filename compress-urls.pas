@@ -6,16 +6,32 @@ PROGRAM Compress_Urls;
 
 var
   Input, Output: Text;
-  i, flag: Integer;
+  i, flag, test, level, code: Integer;
   url: AnsiString;
   suburl: AnsiString;
+  Positions: array[0..10] of Byte;
+  Patterns: array[0..10] of String;
+  Dropin: array[0..10] of String;
 
 BEGIN
-IF (ParamCount <> 2) THEN
+
+IF (ParamCount <> 3) THEN
   BEGIN
-  WriteLn('Incorrect parameter number : one input file and one output file only');
+  WriteLn('Incorrect parameter number : one input file, one output file and one level only');
   halt;
   END;
+val(ParamStr(3), level, code);
+IF (code <> 0) THEN
+  BEGIN
+  WriteLn('Incorrect compression level : can only be 1 or 2');
+  halt;
+  END;
+IF (level < 1) OR (level > 2) THEN
+  BEGIN
+  WriteLn('Incorrect compression level : can only be 1 or 2');
+  halt;
+  END;
+
   Assign (Input, ParamStr(1));
   Reset (Input);
   Assign (Output, ParamStr(2));
@@ -178,12 +194,38 @@ IF (ParamCount <> 2) THEN
 					suburl := 'S';
 					END;
 				END;
-			END;
-				
+			END;	
 		END;
-	WriteLn (Output, suburl);
-  END;
+	IF (level = 1) THEN
+		WriteLn (Output, suburl)
+	ELSE IF (level = 2) THEN
+		BEGIN
+		// TO DO : highest frequency first, read from file
+		// With or without '/' ?
+		Patterns[0] := 'wordpress.com'; 	Positions[0] := 13;	Dropin[0] := '*W';
+		Patterns[1] := 'wikipedia.org/wiki'; 	Positions[1] := 18;	Dropin[1] := '*V';
+		Patterns[2] := 'blogspot.com';	 	Positions[2] := 12;	Dropin[2] := '*B';
+		Patterns[3] := 'google.com';	 	Positions[3] := 10;	Dropin[3] := '*G';
+		Patterns[4] := '.com';	 		Positions[4] := 4;	Dropin[4] := '*C';
+		Patterns[5] := '.html';	 		Positions[5] := 5;	Dropin[5] := '*H';
+		Patterns[6] := '.org';	 		Positions[6] := 4;	Dropin[6] := '*O';
+		Patterns[7] := '.net';	 		Positions[7] := 4;	Dropin[7] := '*N';
+		Patterns[8] := '.php';	 		Positions[8] := 4;	Dropin[8] := '*P';
 
+		FOR i:= 0 to 8 DO
+			BEGIN
+			test := pos(Patterns[i], suburl);
+			IF (test > 0) THEN
+				BEGIN
+				delete(suburl, test, Positions[i]);
+				insert(Dropin[i], suburl, test);
+				BREAK;
+				END;
+			END;
+		// Other
+		WriteLn (Output, suburl)
+		END;
+  END;
   Close (Input);
   Close (Output);
 END.     
