@@ -8,12 +8,14 @@
 # This script could be (very) slow on long files.
 
 #grep '^http'
-#.de, .it, ...
+#.de, .it, co.uk/ ...
+# index.
+# source !
 
 ./compress-urls list list.out
 
-## EXPERIMENTAL (MAY NOT WORK) !!
+## NOT REALLY MAINTAINED (MAY NOT WORK) !!
 < list.out grep -v 'jpeg$' |
-sed -e 's/?utm_.*//g' -e 's/&amp;utm_.*//g' -e 's/\.de\//\.D/g' -e 's/\.de$/\.D/g' -e 's/2012\/0/#2/g' -e 's/2012/°2/g' -e 's/2011/°1/g' -e 's/blog/#C/g' -e 's/index/#I/g' -e 's/news/#N/g' -e 's/post\//#P\//g' -e 's/article\//#A\//ig' -e 's/articles\//#S\//ig' -e 's/archive/°A/g' -e 's/content/°C/g' -e 's/&amp;/\&/g' > list2.out
+sed -e 's/?utm_.*//g' -e 's/&amp;utm_.*//g' -e 's/\.de\//\.D/g' -e 's/\.de$/\.D/g' -e 's/2012\/0/#2/g' -e 's/blog/#C/g' -e 's/index/#I/g' -e 's/news/#N/g' -e 's/post\//#P\//g' -e 's/article\//#A\//ig' -e 's/articles\//#S\//ig' -e 's/archive/°A/g' -e 's/content/°C/g' -e 's/&amp;/\&/g' > list2.out
 
 # 's/\.com/\.C/g' -> 's/\.com\//\.C/g' ?

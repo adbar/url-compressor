@@ -9,8 +9,8 @@ var
   i, test, level, code: Integer;
   url: AnsiString;
   suburl: AnsiString;
-  Patterns: array[0..10] of String;
-  Dropin: array[0..10] of String;
+  Patterns: array[0..30] of String;
+  Dropin: array[0..30] of String;
 
 BEGIN
 
@@ -44,6 +44,7 @@ IF (level < 1) OR (level > 2) THEN
 		suburl := Concat (suburl, url[i]);
 		IF (i = 1) THEN
 			BEGIN
+			// TO DO : order by frequency
 			IF (suburl = 'A') THEN
 				BEGIN
 				suburl := 'http://t.co/';
@@ -92,13 +93,29 @@ IF (level < 1) OR (level > 2) THEN
 				BEGIN
 				suburl := 'http://b1t.it/';
 				END
+			ELSE IF (suburl = 'O') THEN
+				BEGIN
+				suburl := 'http://p.ost.im/p/';
+				END
 			ELSE IF (suburl = 'P') THEN
 				BEGIN
 				suburl := 'http://ping.fm/';
 				END
+			ELSE IF (suburl = 'R') THEN
+				BEGIN
+				suburl := 'http://post.ly/';
+				END
 			ELSE IF (suburl = 'T') THEN
 				BEGIN
 				suburl := 'http://tinyurl.com/';
+				END
+			ELSE IF (suburl = 'U') THEN
+				BEGIN
+				suburl := 'http://arstechnica.com/';
+				END
+			ELSE IF (suburl = 'V') THEN
+				BEGIN
+				suburl := 'http://friendfeed.com/';
 				END
 			ELSE IF (suburl = 'Y') THEN
 				BEGIN
@@ -133,17 +150,18 @@ IF (level < 1) OR (level > 2) THEN
 		BEGIN
 		// TO DO : highest frequency first, read from file ?
 		// With or without '/' ?
-		Patterns[0] := 'wordpress.com'; 	Dropin[0] := '*W';
-		Patterns[1] := 'wikipedia.org/wiki'; 	Dropin[1] := '*V';
-		Patterns[2] := 'blogspot.com';	 	Dropin[2] := '*B';
-		Patterns[3] := 'google.com';	 	Dropin[3] := '*G';
-		Patterns[4] := '.com';	 		Dropin[4] := '*C';
-		Patterns[5] := '.html';	 		Dropin[5] := '*H';
+		Patterns[0] := '.wordpress.com'; 	Dropin[0] := '*W';
+		Patterns[1] := '.wikipedia.org/wiki/'; 	Dropin[1] := '*V';
+		Patterns[2] := '.blogspot.com';	 	Dropin[2] := '*B';
+		Patterns[3] := '.google.com/';	 	Dropin[3] := '*G';
+		Patterns[4] := '.posterous.com/';	Dropin[4] := '*S';
+		Patterns[5] := '.com';	 		Dropin[5] := '*C';
 		Patterns[6] := '.org';	 		Dropin[6] := '*O';
 		Patterns[7] := '.net';	 		Dropin[7] := '*N';
 		Patterns[8] := '.php';	 		Dropin[8] := '*P';
+		Patterns[9] := '.html';	 		Dropin[9] := '*H';
 
-		FOR i:= 0 to 8 DO
+		FOR i:= 0 to 9 DO
 			BEGIN
 			test := pos(Dropin[i], suburl);
 			IF (test > 0) THEN
@@ -153,7 +171,25 @@ IF (level < 1) OR (level > 2) THEN
 				BREAK;
 				END;
 			END;
-		// Other
+
+		Patterns[10] := '2012';	 		Dropin[10] := '°2';
+		Patterns[11] := '2011';			Dropin[11] := '°1';
+		Patterns[12] := '2010';	 		Dropin[12] := '°0';
+		Patterns[13] := '2009';	 		Dropin[13] := '°9';
+		Patterns[14] := '2008';	 		Dropin[14] := '°8';
+
+		FOR i:= 10 to 14 DO
+			BEGIN
+			test := pos(Dropin[i], suburl);
+			IF (test > 0) THEN
+				BEGIN
+				//inc(test);
+				delete(suburl, test, 3);
+				insert(Patterns[i], suburl, test);
+				BREAK;
+				END;
+			END;
+
 		WriteLn (Output, suburl)
 		END;
   END;
