@@ -4,13 +4,19 @@ PROGRAM Decompress_Urls;
 //	It is brought to you by Adrien Barbaresi.
 //	It is freely available under the GNU GPL v3 license (http://www.gnu.org/licenses/gpl.html).
 
+
+{$codepage UTF-8}
+
+uses
+  SysUtils;
+
 var
   Input, Output: Text;
   i, test, level, code: Integer;
   url: AnsiString;
   suburl: AnsiString;
-  Patterns: array[0..30] of String;
-  Dropin: array[0..30] of String;
+  Patterns: array[0..100] of String;
+  Dropin: array[0..100] of String;
 
 BEGIN
 
@@ -97,6 +103,10 @@ IF (level < 1) OR (level > 2) THEN
 				BEGIN
 				suburl := 'http://p.ost.im/p/';
 				END
+			ELSE IF (suburl = 'Ô') THEN
+				BEGIN
+				suburl := 'http://blog.';
+				END
 			ELSE IF (suburl = 'P') THEN
 				BEGIN
 				suburl := 'http://ping.fm/';
@@ -109,13 +119,17 @@ IF (level < 1) OR (level > 2) THEN
 				BEGIN
 				suburl := 'http://tinyurl.com/';
 				END
-			ELSE IF (suburl = 'U') THEN
-				BEGIN
-				suburl := 'http://arstechnica.com/';
-				END
+			//ELSE IF (suburl = 'U') THEN
+			//	BEGIN
+			//	suburl := 'http://arstechnica.com/';
+			//	END
 			ELSE IF (suburl = 'V') THEN
 				BEGIN
 				suburl := 'http://friendfeed.com/';
+				END
+			ELSE IF (suburl = 'X') THEN
+				BEGIN
+				suburl := 'http://ow.ly/';
 				END
 			ELSE IF (suburl = 'Y') THEN
 				BEGIN
@@ -144,54 +158,123 @@ IF (level < 1) OR (level > 2) THEN
 				END;
 			END;
 		END;
-	IF (level = 1) THEN
-		WriteLn (Output, suburl)
-	ELSE IF (level = 2) THEN
+	
+	IF (level = 2) THEN
 		BEGIN
 		// TO DO : highest frequency first, read from file ?
 		// With or without '/' ?
-		Patterns[0] := '.wordpress.com'; 	Dropin[0] := '*W';
-		Patterns[1] := '.wikipedia.org/wiki/'; 	Dropin[1] := '*V';
-		Patterns[2] := '.blogspot.com';	 	Dropin[2] := '*B';
-		Patterns[3] := '.google.com/';	 	Dropin[3] := '*G';
-		Patterns[4] := '.posterous.com/';	Dropin[4] := '*S';
-		Patterns[5] := '.com';	 		Dropin[5] := '*C';
-		Patterns[6] := '.org';	 		Dropin[6] := '*O';
-		Patterns[7] := '.net';	 		Dropin[7] := '*N';
-		Patterns[8] := '.php';	 		Dropin[8] := '*P';
-		Patterns[9] := '.html';	 		Dropin[9] := '*H';
+		Patterns[0] := '.wordpress.com'; 	Dropin[0] := 'ÿ'; //*W
+		Patterns[1] := '.wikipedia.org/wiki/'; 	Dropin[1] := 'û'; //*V
+		Patterns[2] := '.blogspot.com';	 	Dropin[2] := 'þ'; //*B
+		Patterns[3] := '.google.com/';	 	Dropin[3] := '©'; //*G
+		Patterns[4] := '.posterous.com/';	Dropin[4] := '£'; //*S
+		Patterns[5] := '.com';	 		Dropin[5] := '¹'; //*C
+		Patterns[6] := '.org';	 		Dropin[6] := 'ô'; //*O
+		Patterns[7] := '.net';	 		Dropin[7] := 'µ'; //*N
+		Patterns[8] := '.de';	 		Dropin[8] := 'É'; //*N
 
-		FOR i:= 0 to 9 DO
+		FOR i:= 0 to 8 DO
 			BEGIN
-			test := pos(Dropin[i], suburl);
+			test := AnsiPos(Dropin[i], suburl);
 			IF (test > 0) THEN
 				BEGIN
-				delete(suburl, test, 2);
+				delete(suburl, test, 1);
 				insert(Patterns[i], suburl, test);
 				BREAK;
 				END;
 			END;
 
-		Patterns[10] := '2012';	 		Dropin[10] := '°2';
-		Patterns[11] := '2011';			Dropin[11] := '°1';
-		Patterns[12] := '2010';	 		Dropin[12] := '°0';
-		Patterns[13] := '2009';	 		Dropin[13] := '°9';
-		Patterns[14] := '2008';	 		Dropin[14] := '°8';
+		Patterns[10] := '.php';	 	Dropin[10] := '×'; //*P
+		Patterns[11] := '.html';	Dropin[11] := 'ð'; //*H
 
-		FOR i:= 10 to 14 DO
+		FOR i:= 10 to 11 DO
 			BEGIN
-			test := pos(Dropin[i], suburl);
+			test := AnsiPos(Dropin[i], suburl);
 			IF (test > 0) THEN
 				BEGIN
-				//inc(test);
-				delete(suburl, test, 3);
+				delete(suburl, test, 1);
 				insert(Patterns[i], suburl, test);
 				BREAK;
 				END;
 			END;
 
-		WriteLn (Output, suburl)
+		Patterns[20] := '2012/0';	Dropin[20] := 'ø';
+		Patterns[21] := '2012'; 	Dropin[21] := 'Ð';
+		Patterns[22] := '2011/0';	Dropin[22] := '¿';
+		Patterns[23] := '2011';	 	Dropin[23] := '¡';
+		Patterns[24] := '2010/0';	Dropin[24] := '÷';
+		Patterns[25] := '2010';	 	Dropin[25] := 'õ';
+		Patterns[26] := '2009/0';	Dropin[26] := '>';
+		Patterns[27] := '2009';	 	Dropin[27] := '`';
+		Patterns[28] := '2008/0';	Dropin[28] := '²';
+		Patterns[29] := '2008';	 	Dropin[29] := '«';
+		Patterns[30] := '200';	 	Dropin[30] := '»';
+
+		FOR i:= 20 to 30 DO
+			BEGIN
+			test := AnsiPos(Dropin[i], suburl);
+			IF (test > 0) THEN
+				BEGIN
+				delete(suburl, test, 1);
+				insert(Patterns[i], suburl, test);
+				test := AnsiPos(Dropin[i], suburl);
+				IF (test > 0) THEN
+					BEGIN
+					delete(suburl, test, 1);
+					insert(Patterns[i], suburl, test);
+					END;
+				BREAK;
+				END;
+			END;
+
+
+		Patterns[40] := 'index';	Dropin[40] := 'î'; //*I
+		Patterns[41] := 'article';	Dropin[41] := 'æ'; //*A
+		Patterns[42] := 'archive';	Dropin[42] := 'â'; //*a
+
+		FOR i:= 40 to 42 DO
+			BEGIN
+			test := AnsiPos(Dropin[i], suburl);
+			IF (test > 0) THEN
+				BEGIN
+				delete(suburl, test, 1);
+				insert(Patterns[i], suburl, test);
+				BREAK;
+				END;
+			END;
+
+		Patterns[50] := 'blog';	 	Dropin[50] := '¨';
+		Patterns[51] := 'news';		Dropin[51] := '¶';
+		Patterns[52] := '/statuses/';	Dropin[52] := 'Æ';
+		Patterns[53] := '/post/';	Dropin[53] := '¥';
+		Patterns[54] := '/content/';	Dropin[54] := 'Ç';
+
+		FOR i:= 50 to 54 DO
+			BEGIN
+			test := AnsiPos(Dropin[i], suburl);
+			IF (test > 0) THEN
+				BEGIN
+				delete(suburl, test, 1);
+				insert(Patterns[i], suburl, test);
+				BREAK;
+				END;
+			END;
+
+		test := AnsiPos('ß', suburl);
+		IF (test > 0) THEN
+			BEGIN
+			delete(suburl, test, 1);
+			insert('ation', suburl, test);
+			END;
+		test := AnsiPos('¢', suburl);
+		IF (test > 0) THEN
+			BEGIN
+			delete(suburl, test, 1);
+			insert('tion', suburl, test);
+			END;
+
 		END;
+	WriteLn (Output, suburl)
   END;
   Close (Input);
   Close (Output);

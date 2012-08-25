@@ -6,12 +6,13 @@ PROGRAM Compress_Urls;
 
 var
   Input, Output: Text;
-  i, flag, test, level, code: Integer; //test2,
+  i, flag, test, level, code: Integer;
   url: AnsiString;
   suburl: AnsiString;
-  Positions: array[0..30] of Byte;
-  Patterns: array[0..30] of String;
-  Dropin: array[0..30] of String;
+  Positions: array[0..100] of Byte;
+  Patterns: array[0..100] of String;
+  Dropin: array[0..100] of String;
+
 
 BEGIN
 
@@ -46,7 +47,12 @@ IF (level < 1) OR (level > 2) THEN
 		suburl := Concat (suburl, url[i]);
 		IF (i = 12) AND (flag = 0) THEN
 			BEGIN
-			IF (suburl = 'http://t.co/') THEN
+			IF (suburl = 'http://blog.') THEN
+				BEGIN
+				suburl := 'Ô';
+				flag := 1;
+				END
+			ELSE IF (suburl = 'http://t.co/') THEN
 				BEGIN
 				suburl := 'A';
 				flag := 1;
@@ -67,6 +73,11 @@ IF (level < 1) OR (level > 2) THEN
 			ELSE IF (suburl = 'http://wp.me/') THEN
 				BEGIN
 				suburl := 'D';
+				flag := 1;
+				END
+			ELSE IF (suburl = 'http://ow.ly/') THEN
+				BEGIN
+				suburl := 'X';
 				flag := 1;
 				END;
 			END
@@ -153,14 +164,14 @@ IF (level < 1) OR (level > 2) THEN
 				flag := 1;
 				END;
 			END
-		ELSE IF (i = 23) AND (flag = 0) THEN
-			BEGIN
-			IF (suburl = 'http://arstechnica.com/') THEN
-				BEGIN
-				suburl := 'U';
-				flag := 1;
-				END;
-			END
+		//ELSE IF (i = 23) AND (flag = 0) THEN
+		//	BEGIN
+		//	IF (suburl = 'http://arstechnica.com/') THEN
+		//		BEGIN
+		//		suburl := 'U';
+		//		flag := 1;
+		//		END;
+		//	END
 		ELSE IF (i = 31) AND (flag = 0) THEN
 			BEGIN
 			IF (suburl = 'http://www.youtube.com/watch?v=') THEN
@@ -225,32 +236,30 @@ IF (level < 1) OR (level > 2) THEN
 				END;
 			END;	
 		END;
-	IF (level = 1) THEN
-		WriteLn (Output, suburl)
-	ELSE IF (level = 2) THEN
+
+	IF (level = 2) THEN
 		BEGIN
 
 		// Delete url parameters
-		//test := pos('?utm_', suburl);
+		//test := AnsiPos('?utm_', suburl);
 		//if (test > 0) THEN
 		//	delete(suburl, test, length(suburl)-test);
 
 		// TO DO : highest frequency first, read pattern list from file
 		// With or without '/' ?
-		Patterns[0] := '.wordpress.com'; 	Positions[0] := 14;	Dropin[0] := '*W';
-		Patterns[1] := '.wikipedia.org/wiki/'; 	Positions[1] := 20;	Dropin[1] := '*V';
-		Patterns[2] := '.blogspot.com';	 	Positions[2] := 13;	Dropin[2] := '*B';
-		Patterns[3] := '.google.com/';	 	Positions[3] := 12;	Dropin[3] := '*G';
-		Patterns[4] := '.posterous.com/';	Positions[4] := 15;	Dropin[4] := '*S';
-		Patterns[5] := '.com';	 		Positions[5] := 4;	Dropin[5] := '*C';
-		Patterns[6] := '.org';	 		Positions[6] := 4;	Dropin[6] := '*O';
-		Patterns[7] := '.net';	 		Positions[7] := 4;	Dropin[7] := '*N';
-		Patterns[8] := '.php';	 		Positions[8] := 4;	Dropin[8] := '*P';
-		Patterns[9] := '.html';	 		Positions[9] := 5;	Dropin[9] := '*H';
+		Patterns[0] := '.wordpress.com'; 	Positions[0] := 14;	Dropin[0] := 'ÿ'; //*W
+		Patterns[1] := '.wikipedia.org/wiki/'; 	Positions[1] := 20;	Dropin[1] := 'û'; //*V
+		Patterns[2] := '.blogspot.com';	 	Positions[2] := 13;	Dropin[2] := 'þ'; //*B
+		Patterns[3] := '.google.com/';	 	Positions[3] := 12;	Dropin[3] := '©'; //*G
+		Patterns[4] := '.posterous.com/';	Positions[4] := 15;	Dropin[4] := '£'; //*S
+		Patterns[5] := '.com';	 		Positions[5] := 4;	Dropin[5] := '¹'; //*C
+		Patterns[6] := '.org';	 		Positions[6] := 4;	Dropin[6] := 'ô'; //*O
+		Patterns[7] := '.net';	 		Positions[7] := 4;	Dropin[7] := 'µ'; //*N
+		Patterns[8] := '.de';	 		Positions[8] := 3;	Dropin[8] := 'É'; //*N
 
-		FOR i:= 0 to 9 DO
+		FOR i:= 0 to 8 DO
 			BEGIN
-			test := pos(Patterns[i], suburl);
+			test := AnsiPos(Patterns[i], suburl);
 			IF (test > 0) THEN
 				BEGIN
 				delete(suburl, test, Positions[i]);
@@ -259,52 +268,98 @@ IF (level < 1) OR (level > 2) THEN
 				END;
 			END;
 
-		Patterns[10] := '2012';	 		Positions[10] := 4;	Dropin[10] := '°2';
-		Patterns[11] := '2011';	 		Positions[11] := 4;	Dropin[11] := '°1';
-		Patterns[12] := '2010';	 		Positions[12] := 4;	Dropin[12] := '°0';
-		Patterns[13] := '2009';	 		Positions[13] := 4;	Dropin[13] := '°9';
-		Patterns[14] := '2008';	 		Positions[14] := 4;	Dropin[14] := '°8';
+		Patterns[10] := '.php';	 		Positions[10] := 4;	Dropin[10] := '×'; //*P
+		Patterns[11] := '.html';	 	Positions[11] := 5;	Dropin[11] := 'ð'; //*H
 
-		FOR i:= 10 to 14 DO
+		FOR i:= 10 to 11 DO
 			BEGIN
-			test := pos(Patterns[i], suburl);
+			test := AnsiPos(Patterns[i], suburl);
 			IF (test > 0) THEN
 				BEGIN
-				//test2 := pos(concat(Patterns[i], '/0'), suburl);
-				//IF (test > 0) THEN
-				//	BEGIN
-				//	delete(suburl, test, Positions[i]);
-				//	insert(Dropin[i], suburl, test);
-				//	END
-				//ELSE
-				//	BEGIN
-					//dec(test);
-					delete(suburl, test, Positions[i]);
-					insert(Dropin[i], suburl, test);
-				//	END;
+				delete(suburl, test, Positions[i]);
+				insert(Dropin[i], suburl, test);
 				BREAK;
 				END;
 			END;
 
-		//Patterns[15] := 'index';	 	Positions[15] := 5;	Dropin[15] := '*I';
-		//Patterns[16] := 'article';		Positions[16] := 7;	Dropin[16] := '*A';
-		//Patterns[17] := 'archive';	 	Positions[17] := 7;	Dropin[17] := '*a';
+		Patterns[20] := '2012/0';	 	Positions[20] := 6;	Dropin[20] := 'ø';
+		Patterns[21] := '2012'; 		Positions[21] := 4;	Dropin[21] := 'Ð';
+		Patterns[22] := '2011/0';	 	Positions[22] := 6;	Dropin[22] := '¿';
+		Patterns[23] := '2011';	 		Positions[23] := 4;	Dropin[23] := '¡';
+		Patterns[24] := '2010/0';	 	Positions[24] := 6;	Dropin[24] := '÷';
+		Patterns[25] := '2010';	 		Positions[25] := 4;	Dropin[25] := 'õ';
+		Patterns[26] := '2009/0';	 	Positions[26] := 6;	Dropin[26] := '>';
+		Patterns[27] := '2009';	 		Positions[27] := 4;	Dropin[27] := '`';
+		Patterns[28] := '2008/0';	 	Positions[28] := 6;	Dropin[28] := '²';
+		Patterns[29] := '2008';	 		Positions[29] := 4;	Dropin[29] := '«';
+		Patterns[30] := '200';	 		Positions[30] := 3;	Dropin[30] := '»';
 
-		//FOR i:= 15 to 17 DO
-		//	BEGIN
-		//	test := pos(Patterns[i], suburl);
-		//	IF (test > 0) THEN
-		//		BEGIN
-		//		delete(suburl, test, Positions[i]);
-		//		insert(Dropin[i], suburl, test);
-		//		BREAK;
-		//		END;
-		//	END;
-		
-		// index.php
-		// .co.cc 
-		WriteLn (Output, suburl)
+		// /10/ /11/ /12/ ?
+
+		FOR i:= 20 to 30 DO
+			BEGIN
+			test := AnsiPos(Patterns[i], suburl);
+			IF (test > 0) THEN
+				BEGIN
+				delete(suburl, test, Positions[i]);
+				insert(Dropin[i], suburl, test);
+				test := AnsiPos(Dropin[i], suburl);
+				IF (test > 0) THEN
+					BEGIN
+					delete(suburl, test, 1);
+					insert(Patterns[i], suburl, test);
+					END;
+				BREAK;
+				END;
+			END;
+
+		Patterns[40] := 'index';	 	Positions[40] := 5;	Dropin[40] := 'î'; //*I
+		Patterns[41] := 'article';		Positions[41] := 7;	Dropin[41] := 'æ'; //*A
+		Patterns[42] := 'archive';	 	Positions[42] := 7;	Dropin[42] := 'â'; //*a
+
+		FOR i:= 40 to 42 DO
+			BEGIN
+			test := AnsiPos(Patterns[i], suburl);
+			IF (test > 0) THEN
+				BEGIN
+				delete(suburl, test, Positions[i]);
+				insert(Dropin[i], suburl, test);
+				BREAK;
+				END;
+			END;
+
+		Patterns[50] := 'blog';	 	Positions[50] := 4;	Dropin[50] := '¨';
+		Patterns[51] := 'news';		Positions[51] := 4;	Dropin[51] := '¶';
+		Patterns[52] := '/statuses/';	Positions[52] := 10;	Dropin[52] := 'Æ';
+		Patterns[53] := '/post/';	Positions[53] := 6;	Dropin[53] := '¥';
+		Patterns[54] := '/content/';	Positions[54] := 9;	Dropin[54] := 'Ç';
+
+		FOR i:= 50 to 54 DO
+			BEGIN
+			test := AnsiPos(Patterns[i], suburl);
+			IF (test > 0) THEN
+				BEGIN
+				delete(suburl, test, Positions[i]);
+				insert(Dropin[i], suburl, test);
+				BREAK;
+				END;
+			END;
+
+		test := AnsiPos('ation', suburl);
+		IF (test > 0) THEN
+			BEGIN
+			delete(suburl, test, 5);
+			insert('ß', suburl, test);
+			END;
+		test := AnsiPos('tion', suburl);
+		IF (test > 0) THEN
+			BEGIN
+			delete(suburl, test, 4);
+			insert('¢', suburl, test);
+			END;
+
 		END;
+	WriteLn (Output, suburl)
   END;
   Close (Input);
   Close (Output);
